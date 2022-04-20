@@ -41,7 +41,7 @@ public class App
 {
     public static void main( String[] args ) throws Exception
     {
-    	
+    	// this is the initial test company to be analized
     	String InitialTicker = "JBLU";
     	
     	JFrame Window = MakeWindow(InitialTicker);// Create Initial Window and input panel (Border layout is west)
