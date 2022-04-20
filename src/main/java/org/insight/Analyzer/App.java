@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -41,7 +42,7 @@ public class App
     public static void main( String[] args ) throws Exception
     {
     	
-    	String InitialTicker = "AAPL";
+    	String InitialTicker = "JBLU";
     	
     	JFrame Window = MakeWindow(InitialTicker);// Create Initial Window and input panel (Border layout is west)
     	//Window.setSize(1280,1100);
@@ -50,7 +51,8 @@ public class App
     	
     	
 
-        Window.pack();
+        //Window.pack();
+        Window.setSize(1550,838);
         
     	Window.setVisible(true);
     	
@@ -65,7 +67,7 @@ public class App
     	// get the last week of data 
     	long Time = Calendar.getInstance().getTimeInMillis()/1000L;
     	String Period2 = String.valueOf(Time);
-    	Time = Time - (86400*102);
+    	Time = Time - (86400*10);
     	String Period1 = String.valueOf(Time);
 
     	ArrayList<ArrayList<String>> Data = new ArrayList<ArrayList<String>>();
@@ -105,7 +107,7 @@ public class App
 		}
 		in.close();
 		
-		boolean X = DetectDoji(Data);
+		//boolean X = DetectDoji(Data);
 		
 		// Data is ordered from old to new we need to get the newest 5 so we reverse to get new to old.
 		Collections.reverse(Data.get(0));
@@ -131,7 +133,7 @@ public class App
         
         GridBagConstraints Zoning = new GridBagConstraints();
     	Zoning.insets = new Insets(10,10,10,10);
-        
+    	
     	JLabel CompanyName = new JLabel("INSERT COMPANY TICKER TO ANALYZE");
         Zoning.gridx = 0;
         Zoning.gridy = 1;
@@ -146,31 +148,56 @@ public class App
         Zoning.gridy = 2;
         ButtonStart.setSize(500, 100);
     	InputPanel.add(ButtonStart,Zoning);
+    	JLabel OR = new JLabel("- OR -");
+        Zoning.gridx = 0;
+        Zoning.gridy = 3;
+    	InputPanel.add(OR,Zoning);
+    	JLabel Select = new JLabel("SELECT COMPANY STOCK TO ANALIZE");
+        Zoning.gridx = 0;
+        Zoning.gridy = 4;
+    	InputPanel.add(Select,Zoning);
+    	Zoning.gridx = 0;
+        Zoning.gridy = 5;
+    	String[] choises = {"AAPL","MSFT","TWTR","DIS","V","FB","ADBE","AAPL","MSFT","TWTR","DIS","V","FB","ADBE","AAPL","MSFT","TWTR","DIS","V","FB","ADBE"};
+    	final JComboBox<String> CompanySelect = new JComboBox<String>(choises);
+    	InputPanel.add(CompanySelect,Zoning);
+    	JButton ButtonStart2 = new JButton("Analyze Stock");
+        Zoning.gridx = 1;
+        Zoning.gridy = 5;
+        ButtonStart.setSize(500, 100);
+    	InputPanel.add(ButtonStart2,Zoning);
     	
     	final JPanel PanelOne = new JPanel();
     	
-    	PanelOne.add(MakeChart(GetData(InitialTicker)));
+    	ArrayList<ArrayList<String>> Data = GetData(InitialTicker);
+    	
+    	PanelOne.add(MakeChart(Data));
     	
     	Window.add(PanelOne,BorderLayout.CENTER);
     	
-    	JPanel ResultPanel = new JPanel();
-    	Zoning.gridx = 0;
-        Zoning.gridy = 1;
-    	JLabel InfoText = new JLabel("          PATTERNS FOUND          ");
-    	ResultPanel.add(InfoText, Zoning);
-    	Window.add(ResultPanel,BorderLayout.EAST);
     	
+    	Window.add(GETRESULT(Data),BorderLayout.EAST);
     	PanelOne.setBackground(Color.BLACK);
     	PanelOne.setSize(1550,600);
-    	ResultPanel.setBackground(Color.RED);
+    	
+    	final JPanel ResultPanel = GETRESULT(Data);
+    	ResultPanel.setLayout(new GridBagLayout());
+    	//ResultPanel.setBackground(Color.GRAY);
+    	
+
     	
     	
     	ButtonStart.addActionListener(new ActionListener(){  
     		 public void actionPerformed(ActionEvent e){
     			 System.out.println( Window.getSize());
     			 PanelOne.removeAll();
+    			 //ResultPanel.
     			 PanelOne.repaint();
+    			 Window.getContentPane().remove(2);
+    			 
+    			 
     			 try {
+    				 Window.add(GETRESULT(GetData(TickerName.getText())),BorderLayout.EAST);
     				 PanelOne.add(MakeChart(GetData(TickerName.getText())));
     			 } catch (Exception e1) {
     				 e1.printStackTrace();
@@ -184,7 +211,67 @@ public class App
     		 }
     	});    	
     	
+    	Window.setSize(1550,838);
     	return Window;
+    }
+    
+    static JPanel GETRESULT( ArrayList<ArrayList<String>> Data) {
+    	
+    	JPanel ResultPanel = new JPanel();
+    	ResultPanel.setLayout(new GridBagLayout());
+    	
+    	GridBagConstraints Zoning = new GridBagConstraints();
+    	Zoning.insets = new Insets(10,10,10,10);
+    	Zoning.gridx = 0;
+        Zoning.gridy = 1;
+    	
+    	JLabel InfoText = new JLabel("-                                                                         - PATTERNS FOUND -                                                                         -");
+    	ResultPanel.add(InfoText, Zoning);
+    	if(DetectDDoji(Data)) {
+    		JLabel DDOJI = new JLabel("          DRAGONFLY DOJI PATTERN WAS DETECTED          ");
+    		DDOJI.setForeground(Color.GREEN);
+    		Zoning.gridx = 0;
+        	Zoning.gridy = 2;
+        	ResultPanel.add(DDOJI,Zoning);
+    	}
+    	else {
+    		JLabel DDOJI = new JLabel("          DRAGONFLY DOJI PATTERN WAS NOT DETECTED          ");
+    		DDOJI.setForeground(Color.RED);
+    		Zoning.gridx = 0;
+        	Zoning.gridy = 2;
+        	ResultPanel.add(DDOJI,Zoning);
+    	}
+    	
+    	if(DetectLLDoji(Data)) {
+    		JLabel LLDOJI = new JLabel("          LONG-LEGGED DOJI PATTERN WAS DETECTED          ");
+    		LLDOJI.setForeground(Color.GREEN);
+    		Zoning.gridx = 0;
+        	Zoning.gridy = 3;
+        	ResultPanel.add(LLDOJI,Zoning);
+    	}
+    	else {
+    		JLabel LLDOJI = new JLabel("          LONG-LEGGED DOJI PATTERN WAS NOT DETECTED          ");
+    		LLDOJI.setForeground(Color.RED);
+    		Zoning.gridx = 0;
+        	Zoning.gridy = 3;
+        	ResultPanel.add(LLDOJI,Zoning);
+    	}
+    	if(DetectGSDoji(Data)) {
+    		JLabel GSDOJI = new JLabel("          GRAVESTONE DOJI PATTERN WAS DETECTED          ");
+    		GSDOJI.setForeground(Color.GREEN);
+    		Zoning.gridx = 0;
+        	Zoning.gridy = 4;
+        	ResultPanel.add(GSDOJI,Zoning);
+    	}
+    	else {
+    		JLabel GSDOJI = new JLabel("          GRAVESTONE DOJI PATTERN WAS NOT DETECTED          ");
+    		GSDOJI.setForeground(Color.RED);
+    		Zoning.gridx = 0;
+        	Zoning.gridy = 4;
+        	ResultPanel.add(GSDOJI,Zoning);
+    	}
+    	
+    	return ResultPanel;
     }
     
     //Makes chart using the data from yahoo finance
@@ -266,26 +353,157 @@ public class App
         ChartContainer.setPreferredSize(new Dimension(450, 790));
 
         rangeAxis.setRange(Min-1,Max+1);
-        domainAxis.setRange(df.parse(String.valueOf(java.time.LocalDate.now().minusDays(8))),df.parse(String.valueOf(java.time.LocalDate.now().plusDays(1))));
+        domainAxis.setRange(df.parse(String.valueOf(java.time.LocalDate.now().minusDays(9))),df.parse(String.valueOf(java.time.LocalDate.now().plusDays(1))));
         
         //ChartPanel.add(chartContainer);
     	
     	return ChartContainer;
     }
-    
-    static Boolean DetectDoji(ArrayList<ArrayList<String>> Data) {
+
+    static Boolean DetectDDoji(ArrayList<ArrayList<String>> Data) {
     	
-    	for(int i = 0;i<=100;i++) {
-    		Double RANGE = Double.parseDouble(Data.get(1).get(i)) - Double.parseDouble(Data.get(2).get(i)) ;// range = high - low
-    		Double ERROR = 0.05 * RANGE; // Margin of error of 5% for quality 
+    	Double BIG;
+		Double SMALL;
+		
+    	for(int i = 0;i<=4;i++) {
     		
-    		if((Double.parseDouble(Data.get(1).get(i))+ERROR >= Double.parseDouble(Data.get(4).get(i))) && ((
-    			Double.parseDouble(Data.get(1).get(i))-ERROR <= Double.parseDouble(Data.get(4).get(i))))) {
-    			System.out.println("DOJI DETECTED!!! " + i);
-    			//return true;
+    		Double OPEN = Double.parseDouble(Data.get(1).get(i));
+    		Double HIGH = Double.parseDouble(Data.get(2).get(i));
+    		Double LOW = Double.parseDouble(Data.get(3).get(i));;
+    		Double CLOSE = Double.parseDouble(Data.get(4).get(i));
+    		// we know by definition that High is higher than Low 
+    		BIG = Double.parseDouble(Data.get(2).get(i));
+    		SMALL = Double.parseDouble(Data.get(3).get(i));
+    		
+    		if(BIG == SMALL) {
+    			System.out.println("DOJI DETECTED!!! " + i);//  EDGE CASE: if high and low are equal then open and close are equal and we have a Doji
+    			return true;
+    		}
+    		Double RANGE = BIG - SMALL;// range = high - low
+    		Double ERROR = 0.05 * RANGE; // Margin of error of 5% of the whole range 
+    		
+    		// we need to know which is bigger Open or Close to properly determine equality within 5%
+    		
+    		if(Double.parseDouble(Data.get(1).get(i)) > Double.parseDouble(Data.get(4).get(i))) {
+    			BIG = Double.parseDouble(Data.get(1).get(i));
+    			SMALL = Double.parseDouble(Data.get(4).get(i));
+    		}
+    		else {
+    			BIG = Double.parseDouble(Data.get(4).get(i));
+    			SMALL = Double.parseDouble(Data.get(1).get(i));
+    		}
+    		
+    		// now we use the error range to see if big and small are within 5% of eachother
+    		
+    		if( BIG - SMALL <= ERROR) {
+    			if( CLOSE > LOW+((2*(HIGH-LOW))/3)) {
+    				System.out.println("DRAGONFLY DOJI DETECTED!!! " + Data.get(0).get(i));
+    				return true;
+    			}
     		}
     	}
     	return false;
     }
     
+    static Boolean DetectLLDoji(ArrayList<ArrayList<String>> Data) {
+    	
+    	Double BIG;
+		Double SMALL;
+		
+    	for(int i = 0;i<=4;i++) {
+    		Double OPEN = Double.parseDouble(Data.get(1).get(i));
+    		Double HIGH = Double.parseDouble(Data.get(2).get(i));
+    		Double LOW = Double.parseDouble(Data.get(3).get(i));;
+    		Double CLOSE = Double.parseDouble(Data.get(4).get(i));
+    		// we know by definition that High is higher than Low 
+    		BIG = Double.parseDouble(Data.get(2).get(i));
+    		SMALL = Double.parseDouble(Data.get(3).get(i));
+    		
+    		if(BIG == SMALL) {
+    			System.out.println("DOJI DETECTED!!! " + i);//  EDGE CASE: if high and low are equal then open and close are equal and we have a Doji
+    			return true;
+    		}
+    		Double RANGE = BIG - SMALL;// range = high - low
+    		Double ERROR = 0.05 * RANGE; // Margin of error of 5% of the whole range 
+    		
+    		// we need to know which is bigger Open or Close to properly determine equality within 5%
+    		
+    		if(Double.parseDouble(Data.get(1).get(i)) > Double.parseDouble(Data.get(4).get(i))) {
+    			BIG = Double.parseDouble(Data.get(1).get(i));
+    			SMALL = Double.parseDouble(Data.get(4).get(i));
+    		}
+    		else {
+    			BIG = Double.parseDouble(Data.get(4).get(i));
+    			SMALL = Double.parseDouble(Data.get(1).get(i));
+    		}
+    		
+    		// now we use the error range to see if big and small are within 5% of eachother
+    		
+    		if( BIG - SMALL <= ERROR) {
+    			if(CLOSE > LOW+((HIGH-LOW)/3) && CLOSE < LOW+((2*(HIGH-LOW))/3)) {
+    				System.out.println("LONG-LEGGED DOJI DETECTED!!! " + Data.get(0).get(i));
+    				return true;
+    			}
+    		}
+    	}
+    	return false;
+    }
+    
+    static Boolean DetectGSDoji(ArrayList<ArrayList<String>> Data) {
+    	
+    	Double BIG;
+		Double SMALL;
+		
+    	for(int i = 0;i<=4;i++) {
+    		Double OPEN = Double.parseDouble(Data.get(1).get(i));
+    		Double HIGH = Double.parseDouble(Data.get(2).get(i));
+    		Double LOW = Double.parseDouble(Data.get(3).get(i));;
+    		Double CLOSE = Double.parseDouble(Data.get(4).get(i));
+    		// we know by definition that High is higher than Low 
+    		BIG = Double.parseDouble(Data.get(2).get(i));
+    		SMALL = Double.parseDouble(Data.get(3).get(i));
+    		
+    		if(BIG == SMALL) {
+    			System.out.println("DOJI DETECTED!!! " + i);//  EDGE CASE: if high and low are equal then open and close are equal and we have a Doji
+    			return true;
+    		}
+    		Double RANGE = BIG - SMALL;// range = high - low
+    		Double ERROR = 0.05 * RANGE; // Margin of error of 5% of the whole range 
+    		
+    		// we need to know which is bigger Open or Close to properly determine equality within 5%
+    		
+    		if(Double.parseDouble(Data.get(1).get(i)) > Double.parseDouble(Data.get(4).get(i))) {
+    			BIG = Double.parseDouble(Data.get(1).get(i));
+    			SMALL = Double.parseDouble(Data.get(4).get(i));
+    		}
+    		else {
+    			BIG = Double.parseDouble(Data.get(4).get(i));
+    			SMALL = Double.parseDouble(Data.get(1).get(i));
+    		}
+    		
+    		// now we use the error range to see if big and small are within 5% of eachother
+    		
+    		if( BIG - SMALL <= ERROR) {
+    			if(CLOSE < LOW+((HIGH-LOW)/3)) {
+    				System.out.println("GRAVESTONE DOJI DETECTED!!! " + Data.get(0).get(i));
+    				return true;
+    			}
+    		}
+    	}
+    	return false;
+    }
+    
+    static Boolean DetectBearishEngulfing(ArrayList<ArrayList<String>> Data) {
+    	
+		
+    	for(int i = 0;i<=4;i++) {
+    		Double OPEN = Double.parseDouble(Data.get(1).get(i));
+    		Double HIGH = Double.parseDouble(Data.get(2).get(i));
+    		Double LOW = Double.parseDouble(Data.get(3).get(i));;
+    		Double CLOSE = Double.parseDouble(Data.get(4).get(i));
+
+    		
+    	}
+    	return false;
+    }
 }
