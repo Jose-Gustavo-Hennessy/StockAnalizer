@@ -33,10 +33,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-/**
- * Hello world!
- *
- */
+
 public class App 
 {
     public static void main( String[] args ) throws Exception
@@ -64,7 +61,7 @@ public class App
     // Gets Stock data from Yahoo Finance
     static ArrayList<ArrayList<String>> GetData(String Ticker) throws Exception {
     	
-    	// get the last week of data 
+    	// get the last 10 days of data, we can't be sure how many trading days there were so we get the last 10 to be safe 
     	long Time = Calendar.getInstance().getTimeInMillis()/1000L;
     	String Period2 = String.valueOf(Time);
     	Time = Time - (86400*10);
