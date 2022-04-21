@@ -46,7 +46,7 @@ public class App
     	
     	//ArrayList<ArrayList<String>> Data = GetData("TWTR");
     	
-    	
+    	//A METHOD FOR EACH PANEL IS NEEDED
 
         //Window.pack();
         Window.setSize(1550,838);
