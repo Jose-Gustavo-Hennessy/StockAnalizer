@@ -38,6 +38,9 @@ public class App
 {
     public static void main( String[] args ) throws Exception
     {
+	// NEW Project Structure Needed to easy expanding the project    
+	    
+	
     	// this is the initial test company to be analized
     	String InitialTicker = "JBLU";
     	
