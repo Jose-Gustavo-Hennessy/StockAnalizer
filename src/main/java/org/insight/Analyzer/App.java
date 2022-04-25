@@ -45,7 +45,6 @@ public class App
     	String InitialTicker = "JBLU";
     	
     	JFrame Window = MakeWindow(InitialTicker);// Create Initial Window and input panel (Border layout is west)
-    	// fearing introducing a weird interaction between panels make window will remains as it is for now
     	
         //Window.pack();
         Window.setSize(1550,838);
@@ -154,7 +153,8 @@ public class App
     	InputPanel.add(Select,Zoning);
     	Zoning.gridx = 0;
         Zoning.gridy = 5;
-    	String[] choises = {"AAPL","MSFT","TWTR","DIS","V","FB","ADBE","AAPL","MSFT","TWTR","DIS","V","FB","ADBE","AAPL","MSFT","TWTR","DIS","V","FB","ADBE"};
+        // CSV need to be aded and new method created to get choises to work
+    	String[] choises = {"AAPL","MSFT","TWTR","DIS","V","FB","ADBE"};
     	final JComboBox<String> CompanySelect = new JComboBox<String>(choises);
     	InputPanel.add(CompanySelect,Zoning);
     	JButton ButtonStart2 = new JButton("Analyze Stock");
@@ -168,20 +168,13 @@ public class App
     	ArrayList<ArrayList<String>> Data = GetData(InitialTicker);
     	
     	PanelOne.add(MakeChart(Data));
-    	
     	Window.add(PanelOne,BorderLayout.CENTER);
-    	
-    	
     	Window.add(GETRESULT(Data),BorderLayout.EAST);
     	PanelOne.setBackground(Color.BLACK);
     	PanelOne.setSize(1550,600);
     	
     	final JPanel ResultPanel = GETRESULT(Data);
     	ResultPanel.setLayout(new GridBagLayout());
-    	//ResultPanel.setBackground(Color.GRAY);
-    	
-
-    	
     	
     	ButtonStart.addActionListener(new ActionListener(){  
     		 public void actionPerformed(ActionEvent e){
@@ -190,8 +183,6 @@ public class App
     			 //ResultPanel.
     			 PanelOne.repaint();
     			 Window.getContentPane().remove(2);
-    			 
-    			 
     			 try {
     				 Window.add(GETRESULT(GetData(TickerName.getText())),BorderLayout.EAST);
     				 PanelOne.add(MakeChart(GetData(TickerName.getText())));
@@ -266,23 +257,12 @@ public class App
         	Zoning.gridy = 4;
         	ResultPanel.add(GSDOJI,Zoning);
     	}
-    	if(DetectBearishEngulfing(Data)) {
-    		JLabel BEDOJI = new JLabel("          BEARISH ENGULFING PATTERN WAS DETECTED          ");
-    		BEDOJI.setForeground(Color.GREEN);
-    		Zoning.gridx = 0;
-        	Zoning.gridy = 5;
-        	ResultPanel.add(BEDOJI,Zoning);
-    	}
-    	else {
-    		JLabel BEDOJI = new JLabel("          BEARISH ENGULFING PATTERN WAS NOT DETECTED          ");
-    		BEDOJI.setForeground(Color.RED);
-    		Zoning.gridx = 0;
-        	Zoning.gridy = 5;
-        	ResultPanel.add(BEDOJI,Zoning);
-    	}
 
-    	JLabel BUEDOJI = new JLabel(DetectBullishEngulfing(Data));
-    	BUEDOJI.setForeground(Color.GREEN);
+    	JLabel BEDOJI = DetectBearishEngulfing(Data, new JLabel());
+    	Zoning.gridx = 0;
+        Zoning.gridy = 5;
+        ResultPanel.add(BEDOJI,Zoning);
+    	JLabel BUEDOJI = DetectBullishEngulfing(Data, new JLabel());
     	Zoning.gridx = 0;
         Zoning.gridy = 6;
         ResultPanel.add(BUEDOJI,Zoning);
@@ -379,8 +359,6 @@ public class App
 
     static Boolean DetectDDoji(ArrayList<ArrayList<String>> Data) {
     	
-    	Double BIG;
-		Double SMALL;
 		
     	for(int i = 0;i<=4;i++) {
     		
@@ -388,30 +366,15 @@ public class App
     		Double HIGH = Double.parseDouble(Data.get(2).get(i));
     		Double LOW = Double.parseDouble(Data.get(3).get(i));;
     		Double CLOSE = Double.parseDouble(Data.get(4).get(i));
-    		// we know by definition that High is higher than Low 
-    		BIG = Double.parseDouble(Data.get(2).get(i));
-    		SMALL = Double.parseDouble(Data.get(3).get(i));
     		
-    		if(BIG == SMALL) {
-    			System.out.println("DOJI DETECTED!!! " + i);//  EDGE CASE: if high and low are equal then open and close are equal and we have a Doji
-    			return true;
-    		}
-    		Double RANGE = BIG - SMALL;// range = high - low
+    		Double RANGE = HIGH - LOW;// this is the size of the whole range of trading prices
     		Double ERROR = 0.05 * RANGE; // Margin of error of 5% of the whole range 
     		
-    		// we need to know which is bigger Open or Close to properly determine equality within 5%
-    		
-    		if(Double.parseDouble(Data.get(1).get(i)) > Double.parseDouble(Data.get(4).get(i))) {
-    			BIG = Double.parseDouble(Data.get(1).get(i));
-    			SMALL = Double.parseDouble(Data.get(4).get(i));
-    		}
-    		else {
-    			BIG = Double.parseDouble(Data.get(4).get(i));
-    			SMALL = Double.parseDouble(Data.get(1).get(i));
-    		}
-    		
-    		// now we use the error range to see if big and small are within 5% of eachother
-    		
+    		// we need to know what is bigger the open or close so we can calculate using positive values
+    		Double BIG = OPEN>CLOSE ? OPEN : CLOSE ;
+    		Double SMALL = OPEN>CLOSE ? CLOSE : OPEN;
+
+    		// if open are close are the same (within 5% error) its a doji
     		if( BIG - SMALL <= ERROR) {
     			if( CLOSE > LOW+((2*(HIGH-LOW))/3)) {
     				System.out.println("DRAGONFLY DOJI DETECTED!!! " + Data.get(0).get(i));
@@ -424,41 +387,24 @@ public class App
     
     static Boolean DetectLLDoji(ArrayList<ArrayList<String>> Data) {
     	
-    	Double BIG;
-		Double SMALL;
-		
     	for(int i = 0;i<=4;i++) {
+    		
     		Double OPEN = Double.parseDouble(Data.get(1).get(i));
     		Double HIGH = Double.parseDouble(Data.get(2).get(i));
     		Double LOW = Double.parseDouble(Data.get(3).get(i));;
     		Double CLOSE = Double.parseDouble(Data.get(4).get(i));
-    		// we know by definition that High is higher than Low 
-    		BIG = Double.parseDouble(Data.get(2).get(i));
-    		SMALL = Double.parseDouble(Data.get(3).get(i));
     		
-    		if(BIG == SMALL) {
-    			System.out.println("DOJI DETECTED!!! " + i);//  EDGE CASE: if high and low are equal then open and close are equal and we have a Doji
-    			return true;
-    		}
-    		Double RANGE = BIG - SMALL;// range = high - low
+    		Double RANGE = HIGH - LOW;// this is the size of the whole range of trading prices
     		Double ERROR = 0.05 * RANGE; // Margin of error of 5% of the whole range 
     		
-    		// we need to know which is bigger Open or Close to properly determine equality within 5%
-    		
-    		if(Double.parseDouble(Data.get(1).get(i)) > Double.parseDouble(Data.get(4).get(i))) {
-    			BIG = Double.parseDouble(Data.get(1).get(i));
-    			SMALL = Double.parseDouble(Data.get(4).get(i));
-    		}
-    		else {
-    			BIG = Double.parseDouble(Data.get(4).get(i));
-    			SMALL = Double.parseDouble(Data.get(1).get(i));
-    		}
-    		
-    		// now we use the error range to see if big and small are within 5% of eachother
-    		
+    		// we need to know what is bigger the open or close so we can calculate using positive values
+    		Double BIG = OPEN>CLOSE ? OPEN : CLOSE ;
+    		Double SMALL = OPEN>CLOSE ? CLOSE : OPEN;
+
+    		// if open are close are the same (within 5% error) its a doji
     		if( BIG - SMALL <= ERROR) {
-    			if(CLOSE > LOW+((HIGH-LOW)/3) && CLOSE < LOW+((2*(HIGH-LOW))/3)) {
-    				System.out.println("LONG-LEGGED DOJI DETECTED!!! " + Data.get(0).get(i) + " " + i);
+    			if( CLOSE > LOW+(((HIGH-LOW))/3) && OPEN < (LOW+(2*(HIGH-LOW)/3))) {
+    				System.out.println("LONG-LEGGED DOJI DETECTED!!! " + Data.get(0).get(i));
     				return true;
     			}
     		}
@@ -468,41 +414,24 @@ public class App
     
     static Boolean DetectGSDoji(ArrayList<ArrayList<String>> Data) {
     	
-    	Double BIG;
-		Double SMALL;
-		
     	for(int i = 0;i<=4;i++) {
+    		
     		Double OPEN = Double.parseDouble(Data.get(1).get(i));
     		Double HIGH = Double.parseDouble(Data.get(2).get(i));
     		Double LOW = Double.parseDouble(Data.get(3).get(i));;
     		Double CLOSE = Double.parseDouble(Data.get(4).get(i));
-    		// we know by definition that High is higher than Low 
-    		BIG = Double.parseDouble(Data.get(2).get(i));
-    		SMALL = Double.parseDouble(Data.get(3).get(i));
     		
-    		if(BIG == SMALL) {
-    			System.out.println("DOJI DETECTED!!! " + i);//  EDGE CASE: if high and low are equal then open and close are equal and we have a Doji
-    			return true;
-    		}
-    		Double RANGE = BIG - SMALL;// range = high - low
+    		Double RANGE = HIGH - LOW;// this is the size of the whole range of trading prices
     		Double ERROR = 0.05 * RANGE; // Margin of error of 5% of the whole range 
     		
-    		// we need to know which is bigger Open or Close to properly determine equality within 5%
-    		
-    		if(Double.parseDouble(Data.get(1).get(i)) > Double.parseDouble(Data.get(4).get(i))) {
-    			BIG = Double.parseDouble(Data.get(1).get(i));
-    			SMALL = Double.parseDouble(Data.get(4).get(i));
-    		}
-    		else {
-    			BIG = Double.parseDouble(Data.get(4).get(i));
-    			SMALL = Double.parseDouble(Data.get(1).get(i));
-    		}
-    		
-    		// now we use the error range to see if big and small are within 5% of eachother
-    		
+    		// we need to know what is bigger the open or close so we can calculate using positive values
+    		Double BIG = OPEN>CLOSE ? OPEN : CLOSE ;
+    		Double SMALL = OPEN>CLOSE ? CLOSE : OPEN;
+
+    		// if open are close are the same (within 5% error) its a doji
     		if( BIG - SMALL <= ERROR) {
-    			if(CLOSE < LOW+((HIGH-LOW)/3)) {
-    				System.out.println("GRAVESTONE DOJI DETECTED!!! " + Data.get(0).get(i) + " " + i);
+    			if( OPEN <= (LOW+((HIGH-LOW)/3))) {
+    				System.out.println("GRAVESTONE DOJI DETECTED!!! " + Data.get(0).get(i));
     				return true;
     			}
     		}
@@ -510,7 +439,7 @@ public class App
     	return false;
     }
     
-    static Boolean DetectBearishEngulfing(ArrayList<ArrayList<String>> Data) {
+    static JLabel DetectBearishEngulfing(ArrayList<ArrayList<String>> Data, JLabel BEDOJI) {
     	
 		
     	for(int i=4;i>=1;i--) {
@@ -525,17 +454,21 @@ public class App
     		Double CLOSE2 = Double.parseDouble(Data.get(4).get(i-1));
     		
     		if((OPEN < CLOSE) && (OPEN2 > CLOSE2) && (HIGH<HIGH2) && (LOW>LOW2)) {
-    			return true;
+    			BEDOJI.setForeground(Color.GREEN);
+    			BEDOJI.setText("          BEARISH ENGULFING PATTERN DETECTED          ");
+    			return BEDOJI;
     		}
 
     		
     	}
-    	return false;
+		BEDOJI.setText("          BEARISH ENGULFING PATTERN WAS NOT DETECTED          ");
+    	BEDOJI.setForeground(Color.RED);
+    	return BEDOJI;
     }
     
- /*   static Boolean DetectBullishEngulfing(ArrayList<ArrayList<String>> Data) {
+
+    static JLabel DetectBullishEngulfing(ArrayList<ArrayList<String>> Data, JLabel BUEDOJI) {
     	
-		
     	for(int i=4;i>=1;i--) {
     		Double OPEN = Double.parseDouble(Data.get(1).get(i));
     		Double HIGH = Double.parseDouble(Data.get(2).get(i));
@@ -547,34 +480,16 @@ public class App
     		Double LOW2 = Double.parseDouble(Data.get(3).get(i-1));;
     		Double CLOSE2 = Double.parseDouble(Data.get(4).get(i-1));
     		
-    		if((OPEN < CLOSE) && (OPEN2 > CLOSE2) && (HIGH>HIGH2) && (LOW<LOW2)) {
-    			return true;
+    		if((OPEN > CLOSE) && (OPEN2 < CLOSE2) && (HIGH<HIGH2) && (LOW>LOW2)) {
+    			BUEDOJI.setForeground(Color.GREEN);
+    			BUEDOJI.setText("          BULLISH ENGULFING PATTERN WAS DETECTED          ");
+    			return BUEDOJI;
     		}
 
     		
     	}
-    	return false;
-    }*/
-    static String DetectBullishEngulfing(ArrayList<ArrayList<String>> Data) {
-    	
-		
-    	for(int i=4;i>=1;i--) {
-    		Double OPEN = Double.parseDouble(Data.get(1).get(i));
-    		Double HIGH = Double.parseDouble(Data.get(2).get(i));
-    		Double LOW = Double.parseDouble(Data.get(3).get(i));;
-    		Double CLOSE = Double.parseDouble(Data.get(4).get(i));
-
-    		Double OPEN2 = Double.parseDouble(Data.get(1).get(i-1));
-    		Double HIGH2 = Double.parseDouble(Data.get(2).get(i-1));
-    		Double LOW2 = Double.parseDouble(Data.get(3).get(i-1));;
-    		Double CLOSE2 = Double.parseDouble(Data.get(4).get(i-1));
-    		
-    		if((OPEN < CLOSE) && (OPEN2 > CLOSE2) && (HIGH>HIGH2) && (LOW<LOW2)) {
-    			return "          BULLISH ENGULFING PATTERN WAS DETECTED          ";
-    		}
-
-    		
-    	}
-    	return "          BULLISH ENGULFING PATTERN WAS NOT DETECTED          ";
+		BUEDOJI.setForeground(Color.RED);
+		BUEDOJI.setText("          BULLISH ENGULFING PATTERN WAS NOT DETECTED          ");
+		return BUEDOJI;
     }
 }
