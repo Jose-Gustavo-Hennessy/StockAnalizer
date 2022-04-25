@@ -5,9 +5,9 @@ DISCLAIMER: This Project doesn't intend to calculate weather a stock will go up 
 
 SUMMARY:
 In summary, The Application uses Historical data to search for known patterns that descibe the behavior of the buyers and sellers in the market and what it indicates.
+short summary of what each pattern means bellow. (Drop down selection does not yet work, specific ticker needs to be inserted). 
 
 PATTERS:
-
 
 DOJI CANDLE STICK PATTERN:
 a Doji Pattern is when the open and close price are the same (within 5% for this project).
