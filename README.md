@@ -36,6 +36,7 @@ this pattern is very useful at the end of a pattern, however, its meaningless ot
 
 
 Future Features to be added:
+- optimize/minimize code for dectection methods(if statements are not necesary)
 - Star Patterns
 - Engulfing top and buttom patterns
 - all S&P500 Companies as drop-down choises
