@@ -33,24 +33,20 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-
+/**
+ * Hello world!
+ *
+ */
 public class App 
 {
     public static void main( String[] args ) throws Exception
     {
-	// NEW Project Structure Needed to easy expanding the project    
-	    
-	
-    	// this is the initial test company to be analized
+    	
     	String InitialTicker = "JBLU";
     	
     	JFrame Window = MakeWindow(InitialTicker);// Create Initial Window and input panel (Border layout is west)
-    	//Window.setSize(1280,1100);
+    	// fearing introducing a weird interaction between panels make window will remains as it is for now
     	
-    	//ArrayList<ArrayList<String>> Data = GetData("TWTR");
-    	
-    	//A METHOD FOR EACH PANEL IS NEEDED
-
         //Window.pack();
         Window.setSize(1550,838);
         
@@ -64,7 +60,7 @@ public class App
     // Gets Stock data from Yahoo Finance
     static ArrayList<ArrayList<String>> GetData(String Ticker) throws Exception {
     	
-    	// get the last 10 days of data, we can't be sure how many trading days there were so we get the last 10 to be safe 
+    	// get the last week of data 
     	long Time = Calendar.getInstance().getTimeInMillis()/1000L;
     	String Period2 = String.valueOf(Time);
     	Time = Time - (86400*10);
@@ -270,6 +266,27 @@ public class App
         	Zoning.gridy = 4;
         	ResultPanel.add(GSDOJI,Zoning);
     	}
+    	if(DetectBearishEngulfing(Data)) {
+    		JLabel BEDOJI = new JLabel("          BEARISH ENGULFING PATTERN WAS DETECTED          ");
+    		BEDOJI.setForeground(Color.GREEN);
+    		Zoning.gridx = 0;
+        	Zoning.gridy = 5;
+        	ResultPanel.add(BEDOJI,Zoning);
+    	}
+    	else {
+    		JLabel BEDOJI = new JLabel("          BEARISH ENGULFING PATTERN WAS NOT DETECTED          ");
+    		BEDOJI.setForeground(Color.RED);
+    		Zoning.gridx = 0;
+        	Zoning.gridy = 5;
+        	ResultPanel.add(BEDOJI,Zoning);
+    	}
+
+    	JLabel BUEDOJI = new JLabel(DetectBullishEngulfing(Data));
+    	BUEDOJI.setForeground(Color.GREEN);
+    	Zoning.gridx = 0;
+        Zoning.gridy = 6;
+        ResultPanel.add(BUEDOJI,Zoning);
+
     	
     	return ResultPanel;
     }
@@ -441,7 +458,7 @@ public class App
     		
     		if( BIG - SMALL <= ERROR) {
     			if(CLOSE > LOW+((HIGH-LOW)/3) && CLOSE < LOW+((2*(HIGH-LOW))/3)) {
-    				System.out.println("LONG-LEGGED DOJI DETECTED!!! " + Data.get(0).get(i));
+    				System.out.println("LONG-LEGGED DOJI DETECTED!!! " + Data.get(0).get(i) + " " + i);
     				return true;
     			}
     		}
@@ -485,7 +502,7 @@ public class App
     		
     		if( BIG - SMALL <= ERROR) {
     			if(CLOSE < LOW+((HIGH-LOW)/3)) {
-    				System.out.println("GRAVESTONE DOJI DETECTED!!! " + Data.get(0).get(i));
+    				System.out.println("GRAVESTONE DOJI DETECTED!!! " + Data.get(0).get(i) + " " + i);
     				return true;
     			}
     		}
@@ -496,14 +513,68 @@ public class App
     static Boolean DetectBearishEngulfing(ArrayList<ArrayList<String>> Data) {
     	
 		
-    	for(int i = 0;i<=4;i++) {
+    	for(int i=4;i>=1;i--) {
     		Double OPEN = Double.parseDouble(Data.get(1).get(i));
     		Double HIGH = Double.parseDouble(Data.get(2).get(i));
     		Double LOW = Double.parseDouble(Data.get(3).get(i));;
     		Double CLOSE = Double.parseDouble(Data.get(4).get(i));
 
+    		Double OPEN2 = Double.parseDouble(Data.get(1).get(i-1));
+    		Double HIGH2 = Double.parseDouble(Data.get(2).get(i-1));
+    		Double LOW2 = Double.parseDouble(Data.get(3).get(i-1));;
+    		Double CLOSE2 = Double.parseDouble(Data.get(4).get(i-1));
+    		
+    		if((OPEN < CLOSE) && (OPEN2 > CLOSE2) && (HIGH<HIGH2) && (LOW>LOW2)) {
+    			return true;
+    		}
+
     		
     	}
     	return false;
+    }
+    
+ /*   static Boolean DetectBullishEngulfing(ArrayList<ArrayList<String>> Data) {
+    	
+		
+    	for(int i=4;i>=1;i--) {
+    		Double OPEN = Double.parseDouble(Data.get(1).get(i));
+    		Double HIGH = Double.parseDouble(Data.get(2).get(i));
+    		Double LOW = Double.parseDouble(Data.get(3).get(i));;
+    		Double CLOSE = Double.parseDouble(Data.get(4).get(i));
+
+    		Double OPEN2 = Double.parseDouble(Data.get(1).get(i-1));
+    		Double HIGH2 = Double.parseDouble(Data.get(2).get(i-1));
+    		Double LOW2 = Double.parseDouble(Data.get(3).get(i-1));;
+    		Double CLOSE2 = Double.parseDouble(Data.get(4).get(i-1));
+    		
+    		if((OPEN < CLOSE) && (OPEN2 > CLOSE2) && (HIGH>HIGH2) && (LOW<LOW2)) {
+    			return true;
+    		}
+
+    		
+    	}
+    	return false;
+    }*/
+    static String DetectBullishEngulfing(ArrayList<ArrayList<String>> Data) {
+    	
+		
+    	for(int i=4;i>=1;i--) {
+    		Double OPEN = Double.parseDouble(Data.get(1).get(i));
+    		Double HIGH = Double.parseDouble(Data.get(2).get(i));
+    		Double LOW = Double.parseDouble(Data.get(3).get(i));;
+    		Double CLOSE = Double.parseDouble(Data.get(4).get(i));
+
+    		Double OPEN2 = Double.parseDouble(Data.get(1).get(i-1));
+    		Double HIGH2 = Double.parseDouble(Data.get(2).get(i-1));
+    		Double LOW2 = Double.parseDouble(Data.get(3).get(i-1));;
+    		Double CLOSE2 = Double.parseDouble(Data.get(4).get(i-1));
+    		
+    		if((OPEN < CLOSE) && (OPEN2 > CLOSE2) && (HIGH>HIGH2) && (LOW<LOW2)) {
+    			return "          BULLISH ENGULFING PATTERN WAS DETECTED          ";
+    		}
+
+    		
+    	}
+    	return "          BULLISH ENGULFING PATTERN WAS NOT DETECTED          ";
     }
 }
