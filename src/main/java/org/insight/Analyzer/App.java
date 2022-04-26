@@ -214,50 +214,18 @@ public class App
     	
     	JLabel InfoText = new JLabel("-                                                                         - PATTERNS FOUND -                                                                         -");
     	ResultPanel.add(InfoText, Zoning);
-    	if(DetectDDoji(Data)) {
-    		JLabel DDOJI = new JLabel("          DRAGONFLY DOJI PATTERN WAS DETECTED          ");
-    		DDOJI.setForeground(Color.GREEN);
-    		Zoning.gridx = 0;
-        	Zoning.gridy = 2;
-        	ResultPanel.add(DDOJI,Zoning);
-    	}
-    	else {
-    		JLabel DDOJI = new JLabel("          DRAGONFLY DOJI PATTERN WAS NOT DETECTED          ");
-    		DDOJI.setForeground(Color.RED);
-    		Zoning.gridx = 0;
-        	Zoning.gridy = 2;
-        	ResultPanel.add(DDOJI,Zoning);
-    	}
-    	
-    	if(DetectLLDoji(Data)) {
-    		JLabel LLDOJI = new JLabel("          LONG-LEGGED DOJI PATTERN WAS DETECTED          ");
-    		LLDOJI.setForeground(Color.GREEN);
-    		Zoning.gridx = 0;
-        	Zoning.gridy = 3;
-        	ResultPanel.add(LLDOJI,Zoning);
-    	}
-    	else {
-    		JLabel LLDOJI = new JLabel("          LONG-LEGGED DOJI PATTERN WAS NOT DETECTED          ");
-    		LLDOJI.setForeground(Color.RED);
-    		Zoning.gridx = 0;
-        	Zoning.gridy = 3;
-        	ResultPanel.add(LLDOJI,Zoning);
-    	}
-    	if(DetectGSDoji(Data)) {
-    		JLabel GSDOJI = new JLabel("          GRAVESTONE DOJI PATTERN WAS DETECTED          ");
-    		GSDOJI.setForeground(Color.GREEN);
-    		Zoning.gridx = 0;
-        	Zoning.gridy = 4;
-        	ResultPanel.add(GSDOJI,Zoning);
-    	}
-    	else {
-    		JLabel GSDOJI = new JLabel("          GRAVESTONE DOJI PATTERN WAS NOT DETECTED          ");
-    		GSDOJI.setForeground(Color.RED);
-    		Zoning.gridx = 0;
-        	Zoning.gridy = 4;
-        	ResultPanel.add(GSDOJI,Zoning);
-    	}
-
+    	JLabel DDOJI = DetectDDoji(Data, new JLabel());
+    	Zoning.gridx = 0;
+        Zoning.gridy = 2;
+        ResultPanel.add(DDOJI,Zoning);
+    	JLabel LLDOJI = DetectLLDoji(Data,new JLabel());
+    	Zoning.gridx = 0;
+        Zoning.gridy = 3;
+        ResultPanel.add(LLDOJI,Zoning);
+    	JLabel GSDOJI = DetectGSDoji(Data, new JLabel());
+    	Zoning.gridx = 0;
+        Zoning.gridy = 4;
+        ResultPanel.add(GSDOJI,Zoning);
     	JLabel BEDOJI = DetectBearishEngulfing(Data, new JLabel());
     	Zoning.gridx = 0;
         Zoning.gridy = 5;
@@ -357,7 +325,7 @@ public class App
     	return ChartContainer;
     }
 
-    static Boolean DetectDDoji(ArrayList<ArrayList<String>> Data) {
+    static JLabel DetectDDoji(ArrayList<ArrayList<String>> Data, JLabel DDOJI) {
     	
 		
     	for(int i = 0;i<=4;i++) {
@@ -378,14 +346,18 @@ public class App
     		if( BIG - SMALL <= ERROR) {
     			if( CLOSE > LOW+((2*(HIGH-LOW))/3)) {
     				System.out.println("DRAGONFLY DOJI DETECTED!!! " + Data.get(0).get(i));
-    				return true;
+    				DDOJI.setText("          DRAGONFLY DOJI PATTERN WAS DETECTED          ");
+    				DDOJI.setForeground(Color.GREEN);
+    				return DDOJI;
     			}
     		}
     	}
-    	return false;
+		DDOJI.setText("          DRAGONFLY DOJI PATTERN WAS NOT DETECTED          ");
+		DDOJI.setForeground(Color.RED);
+		return DDOJI;
     }
     
-    static Boolean DetectLLDoji(ArrayList<ArrayList<String>> Data) {
+    static JLabel DetectLLDoji(ArrayList<ArrayList<String>> Data, JLabel LLDOJI) {
     	
     	for(int i = 0;i<=4;i++) {
     		
@@ -405,14 +377,18 @@ public class App
     		if( BIG - SMALL <= ERROR) {
     			if( CLOSE > LOW+(((HIGH-LOW))/3) && OPEN < (LOW+(2*(HIGH-LOW)/3))) {
     				System.out.println("LONG-LEGGED DOJI DETECTED!!! " + Data.get(0).get(i));
-    				return true;
+    				LLDOJI.setText("          LONG-LEGGED DOJI PATTERN WAS DETECTED          ");
+    				LLDOJI.setForeground(Color.GREEN);
+    				return LLDOJI;
     			}
     		}
     	}
-    	return false;
+    	LLDOJI.setText("          LONG-LEGGED DOJI PATTERN WAS NOT DETECTED          ");
+		LLDOJI.setForeground(Color.RED);
+    	return LLDOJI;
     }
     
-    static Boolean DetectGSDoji(ArrayList<ArrayList<String>> Data) {
+    static JLabel DetectGSDoji(ArrayList<ArrayList<String>> Data, JLabel GSDOJI) {
     	
     	for(int i = 0;i<=4;i++) {
     		
@@ -432,11 +408,15 @@ public class App
     		if( BIG - SMALL <= ERROR) {
     			if( OPEN <= (LOW+((HIGH-LOW)/3))) {
     				System.out.println("GRAVESTONE DOJI DETECTED!!! " + Data.get(0).get(i));
-    				return true;
+    				GSDOJI.setText("          GRAVESTONE DOJI PATTERN WAS DETECTED          ");
+    				GSDOJI.setForeground(Color.GREEN);
+    				return GSDOJI;
     			}
     		}
     	}
-    	return false;
+    	GSDOJI.setText("          GRAVESTONE DOJI PATTERN WAS NOT DETECTED          ");
+		GSDOJI.setForeground(Color.RED);
+    	return GSDOJI;
     }
     
     static JLabel DetectBearishEngulfing(ArrayList<ArrayList<String>> Data, JLabel BEDOJI) {
