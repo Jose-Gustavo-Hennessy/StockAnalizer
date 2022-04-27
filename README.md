@@ -36,10 +36,9 @@ this pattern is very useful at the end of a pattern, however, its meaningless ot
 
 
 Future Features to be added:
-- optimize/minimize code for dectection methods(if statements are not necesary)
 - Star Patterns
 - Engulfing top and buttom patterns
+- three soldier patterns
 - all S&P500 Companies as drop-down choises
-- Support Calculation
-- Resistance Calculation
+- add moving 30, 50, and 90 days average price calculation
 - RSI Momentum Calculation
