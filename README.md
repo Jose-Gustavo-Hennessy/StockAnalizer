@@ -39,6 +39,8 @@ Future Features to be added:
 - Star Patterns
 - Engulfing top and buttom patterns
 - three soldier patterns
-- all S&P500 Companies as drop-down choises
+- add all S&P500 Companies as drop-down choises
 - add moving 30, 50, and 90 days average price calculation
 - RSI Momentum Calculation
+- Division of the project into many java files to ease the further expansion of the project
+- stats for every pattern for last year of trading
