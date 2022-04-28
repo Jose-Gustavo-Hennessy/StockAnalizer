@@ -42,6 +42,9 @@ public class App
     public static void main( String[] args ) throws Exception
     {
     	
+    	Analisys Calc = new Analisys();
+    	Calc.MESSAGE();
+    	
     	String InitialTicker = "JBLU";
     	
     	JFrame Window = MakeWindow(InitialTicker);// Create Initial Window and input panel (Border layout is west)
@@ -207,6 +210,8 @@ public class App
     	JPanel ResultPanel = new JPanel();
     	ResultPanel.setLayout(new GridBagLayout());
     	
+    	Analisys Calc = new Analisys();
+    	
     	GridBagConstraints Zoning = new GridBagConstraints();
     	Zoning.insets = new Insets(10,10,10,10);
     	Zoning.gridx = 0;
@@ -218,7 +223,8 @@ public class App
     	Zoning.gridx = 0;
         Zoning.gridy = 2;
         ResultPanel.add(DDOJI,Zoning);
-    	JLabel LLDOJI = DetectLLDoji(Data,new JLabel());
+    	//JLabel LLDOJI = DetectLLDoji(Data,new JLabel());
+    	JLabel LLDOJI = Calc.DetectLLDoji(Data,new JLabel());
     	Zoning.gridx = 0;
         Zoning.gridy = 3;
         ResultPanel.add(LLDOJI,Zoning);
