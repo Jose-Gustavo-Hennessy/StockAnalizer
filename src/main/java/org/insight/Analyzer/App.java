@@ -216,10 +216,9 @@ public class App
     	Zoning.insets = new Insets(10,10,10,10);
     	Zoning.gridx = 0;
         Zoning.gridy = 1;
-    	
     	JLabel InfoText = new JLabel("-                                                                         - PATTERNS FOUND -                                                                         -");
     	ResultPanel.add(InfoText, Zoning);
-    	JLabel DDOJI = DetectDDoji(Data, new JLabel());
+    	JLabel DDOJI = Calc.DetectDDoji(Data, new JLabel());
     	Zoning.gridx = 0;
         Zoning.gridy = 2;
         ResultPanel.add(DDOJI,Zoning);
@@ -228,19 +227,34 @@ public class App
     	Zoning.gridx = 0;
         Zoning.gridy = 3;
         ResultPanel.add(LLDOJI,Zoning);
-    	JLabel GSDOJI = DetectGSDoji(Data, new JLabel());
+    	JLabel GSDOJI = Calc.DetectGSDoji(Data, new JLabel());
     	Zoning.gridx = 0;
         Zoning.gridy = 4;
         ResultPanel.add(GSDOJI,Zoning);
-    	JLabel BEDOJI = DetectBearishEngulfing(Data, new JLabel());
+    	JLabel BEDOJI = Calc.DetectBearishEngulfing(Data, new JLabel());
     	Zoning.gridx = 0;
         Zoning.gridy = 5;
         ResultPanel.add(BEDOJI,Zoning);
-    	JLabel BUEDOJI = DetectBullishEngulfing(Data, new JLabel());
+    	JLabel BUEDOJI = Calc.DetectBullishEngulfing(Data, new JLabel());
     	Zoning.gridx = 0;
         Zoning.gridy = 6;
         ResultPanel.add(BUEDOJI,Zoning);
-
+    	JLabel MSD = Calc.DetectMorningStar(Data, new JLabel());
+    	Zoning.gridx = 0;
+        Zoning.gridy = 7;
+        ResultPanel.add(MSD,Zoning);
+    	JLabel ESD = Calc.DetectEveningStar(Data, new JLabel());
+    	Zoning.gridx = 0;
+        Zoning.gridy = 9;
+        ResultPanel.add(ESD,Zoning);
+        JLabel BHD = Calc.BullishHarami(Data, new JLabel());
+    	Zoning.gridx = 0;
+        Zoning.gridy = 10;
+        ResultPanel.add(BHD,Zoning);
+        JLabel BSHD = Calc.BearishHarami(Data, new JLabel());
+    	Zoning.gridx = 0;
+        Zoning.gridy = 11;
+        ResultPanel.add(BSHD,Zoning);
     	
     	return ResultPanel;
     }
@@ -331,151 +345,4 @@ public class App
     	return ChartContainer;
     }
 
-    static JLabel DetectDDoji(ArrayList<ArrayList<String>> Data, JLabel DDOJI) {
-    	
-		
-    	for(int i = 0;i<=4;i++) {
-    		
-    		Double OPEN = Double.parseDouble(Data.get(1).get(i));
-    		Double HIGH = Double.parseDouble(Data.get(2).get(i));
-    		Double LOW = Double.parseDouble(Data.get(3).get(i));;
-    		Double CLOSE = Double.parseDouble(Data.get(4).get(i));
-    		
-    		Double RANGE = HIGH - LOW;// this is the size of the whole range of trading prices
-    		Double ERROR = 0.05 * RANGE; // Margin of error of 5% of the whole range 
-    		
-    		// we need to know what is bigger the open or close so we can calculate using positive values
-    		Double BIG = OPEN>CLOSE ? OPEN : CLOSE ;
-    		Double SMALL = OPEN>CLOSE ? CLOSE : OPEN;
-
-    		// if open are close are the same (within 5% error) its a doji
-    		if( BIG - SMALL <= ERROR) {
-    			if( CLOSE > LOW+((2*(HIGH-LOW))/3)) {
-    				System.out.println("DRAGONFLY DOJI DETECTED!!! " + Data.get(0).get(i));
-    				DDOJI.setText("          DRAGONFLY DOJI PATTERN WAS DETECTED          ");
-    				DDOJI.setForeground(Color.GREEN);
-    				return DDOJI;
-    			}
-    		}
-    	}
-		DDOJI.setText("          DRAGONFLY DOJI PATTERN WAS NOT DETECTED          ");
-		DDOJI.setForeground(Color.RED);
-		return DDOJI;
-    }
-    
-    static JLabel DetectLLDoji(ArrayList<ArrayList<String>> Data, JLabel LLDOJI) {
-    	
-    	for(int i = 0;i<=4;i++) {
-    		
-    		Double OPEN = Double.parseDouble(Data.get(1).get(i));
-    		Double HIGH = Double.parseDouble(Data.get(2).get(i));
-    		Double LOW = Double.parseDouble(Data.get(3).get(i));;
-    		Double CLOSE = Double.parseDouble(Data.get(4).get(i));
-    		
-    		Double RANGE = HIGH - LOW;// this is the size of the whole range of trading prices
-    		Double ERROR = 0.05 * RANGE; // Margin of error of 5% of the whole range 
-    		
-    		// we need to know what is bigger the open or close so we can calculate using positive values
-    		Double BIG = OPEN>CLOSE ? OPEN : CLOSE ;
-    		Double SMALL = OPEN>CLOSE ? CLOSE : OPEN;
-
-    		// if open are close are the same (within 5% error) its a doji
-    		if( BIG - SMALL <= ERROR) {
-    			if( CLOSE > LOW+(((HIGH-LOW))/3) && OPEN < (LOW+(2*(HIGH-LOW)/3))) {
-    				System.out.println("LONG-LEGGED DOJI DETECTED!!! " + Data.get(0).get(i));
-    				LLDOJI.setText("          LONG-LEGGED DOJI PATTERN WAS DETECTED          ");
-    				LLDOJI.setForeground(Color.GREEN);
-    				return LLDOJI;
-    			}
-    		}
-    	}
-    	LLDOJI.setText("          LONG-LEGGED DOJI PATTERN WAS NOT DETECTED          ");
-		LLDOJI.setForeground(Color.RED);
-    	return LLDOJI;
-    }
-    
-    static JLabel DetectGSDoji(ArrayList<ArrayList<String>> Data, JLabel GSDOJI) {
-    	
-    	for(int i = 0;i<=4;i++) {
-    		
-    		Double OPEN = Double.parseDouble(Data.get(1).get(i));
-    		Double HIGH = Double.parseDouble(Data.get(2).get(i));
-    		Double LOW = Double.parseDouble(Data.get(3).get(i));;
-    		Double CLOSE = Double.parseDouble(Data.get(4).get(i));
-    		
-    		Double RANGE = HIGH - LOW;// this is the size of the whole range of trading prices
-    		Double ERROR = 0.05 * RANGE; // Margin of error of 5% of the whole range 
-    		
-    		// we need to know what is bigger the open or close so we can calculate using positive values
-    		Double BIG = OPEN>CLOSE ? OPEN : CLOSE ;
-    		Double SMALL = OPEN>CLOSE ? CLOSE : OPEN;
-
-    		// if open are close are the same (within 5% error) its a doji
-    		if( BIG - SMALL <= ERROR) {
-    			if( OPEN <= (LOW+((HIGH-LOW)/3))) {
-    				System.out.println("GRAVESTONE DOJI DETECTED!!! " + Data.get(0).get(i));
-    				GSDOJI.setText("          GRAVESTONE DOJI PATTERN WAS DETECTED          ");
-    				GSDOJI.setForeground(Color.GREEN);
-    				return GSDOJI;
-    			}
-    		}
-    	}
-    	GSDOJI.setText("          GRAVESTONE DOJI PATTERN WAS NOT DETECTED          ");
-		GSDOJI.setForeground(Color.RED);
-    	return GSDOJI;
-    }
-    
-    static JLabel DetectBearishEngulfing(ArrayList<ArrayList<String>> Data, JLabel BEDOJI) {
-    	
-		
-    	for(int i=4;i>=1;i--) {
-    		Double OPEN = Double.parseDouble(Data.get(1).get(i));
-    		Double HIGH = Double.parseDouble(Data.get(2).get(i));
-    		Double LOW = Double.parseDouble(Data.get(3).get(i));;
-    		Double CLOSE = Double.parseDouble(Data.get(4).get(i));
-
-    		Double OPEN2 = Double.parseDouble(Data.get(1).get(i-1));
-    		Double HIGH2 = Double.parseDouble(Data.get(2).get(i-1));
-    		Double LOW2 = Double.parseDouble(Data.get(3).get(i-1));;
-    		Double CLOSE2 = Double.parseDouble(Data.get(4).get(i-1));
-    		
-    		if((OPEN < CLOSE) && (OPEN2 > CLOSE2) && (HIGH<HIGH2) && (LOW>LOW2)) {
-    			BEDOJI.setForeground(Color.GREEN);
-    			BEDOJI.setText("          BEARISH ENGULFING PATTERN DETECTED          ");
-    			return BEDOJI;
-    		}
-
-    		
-    	}
-		BEDOJI.setText("          BEARISH ENGULFING PATTERN WAS NOT DETECTED          ");
-    	BEDOJI.setForeground(Color.RED);
-    	return BEDOJI;
-    }
-    
-
-    static JLabel DetectBullishEngulfing(ArrayList<ArrayList<String>> Data, JLabel BUEDOJI) {
-    	
-    	for(int i=4;i>=1;i--) {
-    		Double OPEN = Double.parseDouble(Data.get(1).get(i));
-    		Double HIGH = Double.parseDouble(Data.get(2).get(i));
-    		Double LOW = Double.parseDouble(Data.get(3).get(i));;
-    		Double CLOSE = Double.parseDouble(Data.get(4).get(i));
-
-    		Double OPEN2 = Double.parseDouble(Data.get(1).get(i-1));
-    		Double HIGH2 = Double.parseDouble(Data.get(2).get(i-1));
-    		Double LOW2 = Double.parseDouble(Data.get(3).get(i-1));;
-    		Double CLOSE2 = Double.parseDouble(Data.get(4).get(i-1));
-    		
-    		if((OPEN > CLOSE) && (OPEN2 < CLOSE2) && (HIGH<HIGH2) && (LOW>LOW2)) {
-    			BUEDOJI.setForeground(Color.GREEN);
-    			BUEDOJI.setText("          BULLISH ENGULFING PATTERN WAS DETECTED          ");
-    			return BUEDOJI;
-    		}
-
-    		
-    	}
-		BUEDOJI.setForeground(Color.RED);
-		BUEDOJI.setText("          BULLISH ENGULFING PATTERN WAS NOT DETECTED          ");
-		return BUEDOJI;
-    }
 }
