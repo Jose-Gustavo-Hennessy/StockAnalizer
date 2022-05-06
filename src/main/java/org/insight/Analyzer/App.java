@@ -6,6 +6,8 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.CandlestickRenderer;
 import org.jfree.data.xy.*;
 
+
+import java.io.File;
 import java.net.*;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -25,6 +27,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -157,7 +160,21 @@ public class App
     	Zoning.gridx = 0;
         Zoning.gridy = 5;
         // CSV need to be aded and new method created to get choises to work
+        
+        try {
+        	File FileOb = new File("companies.csv");
+        	Scanner Reader = new Scanner(FileOb);
+        	while(Reader.hasNextLine()) {
+        		String data = Reader.nextLine();
+        		System.out.println(data);
+        	}
+        }
+        catch(FileNotFoundException e) {
+        	System.out.println("FNF Error");
+        }
+        
     	String[] choises = {"AAPL","MSFT","TWTR","DIS","V","FB","ADBE"};
+    	// end of CSV
     	final JComboBox<String> CompanySelect = new JComboBox<String>(choises);
     	InputPanel.add(CompanySelect,Zoning);
     	JButton ButtonStart2 = new JButton("Analyze Stock");
