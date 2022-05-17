@@ -36,11 +36,8 @@ this pattern is very useful at the end of a pattern, however, its meaningless ot
 
 
 Future Features to be added:
-- Star Patterns
-- Engulfing top and buttom patterns
-- three soldier patterns
 - add all S&P500 Companies as drop-down choises
-- add method for price moving average for 30, 50, and 90 days
-- RSI Momentum Calculation
+- add chart for stock price moving average for 30, 50, and 90 days
+- add RSI Momentum Calculation
 - Division of the project into many java files to ease the further expansion of the project
-- stats for every pattern for last year of trading
+- stats for every pattern for last year of trading 
