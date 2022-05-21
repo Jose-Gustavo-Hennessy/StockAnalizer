@@ -37,7 +37,7 @@ this pattern is very useful at the end of a pattern, however, its meaningless ot
 
 Future Features to be added:
 - add all S&P500 Companies as drop-down choises
+- Divide project into smaller files of classes and helper classes for ease of work
 - add chart for stock price moving average for 30, 50, and 90 days
 - add RSI Momentum Calculation
-- Division of the project into many java files to ease the further expansion of the project
 - stats for every pattern for last year of trading 
