@@ -1,7 +1,8 @@
 # StockAnalizer
 StockAnalizer
 
-Project currently on hold while I merge 2 different versions of the application and further divide the code for ease of expansion
+
+<span style= "color:red"> Project currently on hold while I merge 2 different versions of the application and further divide the code for ease of expansion</span>
 
 DISCLAIMER: This Project doesn't intend to calculate weather a stock will go up or down. It analizes hystorical data for patterns that signal a likely upward or downward change in price, however, its impossible to be sure the patter is right without also using Fundamental analysis and keeping in mind outside factors that may impact the price of a stock.
 
